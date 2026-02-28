@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mr. Botjangles — Alter Field Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,600;0,700;0,800;0,900;1,700&family=Barlow:wght@400;500;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#07060f;--panel:#0c0a18;--card:#100e1f;--border:#1e1a35;--border2:#2d2850;
+    --accent:#b06bff;--accent2:#7c3aed;--accent3:#d4aaff;
+    --text:#d0cce8;--muted:#4e4870;--muted2:#2a2545;
+    --green:#4caf82;--red:#e05555;--gold:#e8b84b;--bang:#DA292A;--valk:#4fc3f7;
+    --font-head:'Barlow Condensed',sans-serif;--font-ui:'Barlow',sans-serif;--font-mono:'Share Tech Mono',monospace;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-ui);font-size:clamp(14px,1.2vw,18px);min-height:100vh;overflow-x:hidden}
+  body::before{content:'';position:fixed;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 39px,rgba(30,15,60,.3) 39px,rgba(30,15,60,.3) 40px),repeating-linear-gradient(90deg,transparent,transparent 39px,rgba(30,15,60,.15) 39px,rgba(30,15,60,.15) 40px);pointer-events:none;z-index:0}
+  body::after{content:'';position:fixed;top:0;left:0;right:0;height:320px;background:radial-gradient(ellipse at 30% 0%,rgba(176,107,255,.08) 0%,transparent 70%);pointer-events:none;z-index:0}
+  .app{position:relative;z-index:1;max-width:100%;padding:0 clamp(20px,4vw,72px) 80px;min-height:100vh}
+  .header{padding:clamp(20px,2.5vw,36px) 0 clamp(14px,1.8vw,24px);border-bottom:2px solid var(--accent);margin-bottom:clamp(16px,2vw,28px);display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;position:relative;overflow:hidden}
+  .header-left{display:flex;align-items:center;gap:clamp(14px,2vw,28px)}
+  .header-portrait{width:clamp(80px,10vw,160px);height:clamp(80px,10vw,160px);object-fit:cover;object-position:top center;border:2px solid var(--accent);filter:saturate(.85) contrast(1.1);flex-shrink:0;box-shadow:0 0 28px rgba(176,107,255,.3)}
+  .logo{font-family:var(--font-head);font-weight:900;font-size:clamp(26px,3.5vw,54px);font-style:italic;letter-spacing:.08em;text-transform:uppercase;line-height:1;color:#fff}
+  .logo span{color:var(--accent)}
+  .header-sub{font-family:var(--font-mono);font-size:clamp(9px,.85vw,12px);color:var(--accent);letter-spacing:.16em;text-transform:uppercase;margin-top:5px;opacity:.85}
+  .header-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .badge{font-family:var(--font-mono);font-size:clamp(8px,.7vw,10px);letter-spacing:.12em;text-transform:uppercase;padding:3px 8px;border:1px solid var(--border2);color:var(--muted)}
+  .badge.role{border-color:var(--accent);color:var(--accent)}.badge.class{border-color:rgba(176,107,255,.4);color:var(--accent2)}.badge.team{border-color:var(--gold);color:var(--gold)}
+  .config-badge{font-family:var(--font-mono);font-size:10px;padding:4px 10px;border:1px solid var(--red);color:var(--red);cursor:pointer;transition:all .2s;white-space:nowrap;background:none}
+  .config-badge:hover{background:rgba(224,85,85,.1)}.config-badge.connected{border-color:var(--green);color:var(--green)}
+  .header-vfx{position:absolute;right:0;top:0;bottom:0;width:220px;background:linear-gradient(to left,rgba(176,107,255,.05) 0%,transparent 100%);pointer-events:none}
+  .tabs{display:flex;gap:2px;margin-bottom:clamp(16px,2vw,28px);border-bottom:2px solid var(--border);overflow-x:auto;scrollbar-width:none}
+  .tabs::-webkit-scrollbar{display:none}
+  .tab{font-family:var(--font-ui);font-size:clamp(11px,1vw,14px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:clamp(8px,1vw,13px) clamp(14px,1.6vw,24px);color:var(--muted);border:none;background:none;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;white-space:nowrap}
+  .tab:hover{color:var(--text)}.tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .panel{display:none;animation:fadeIn .2s ease}.panel.active{display:block}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+  @media(min-width:1100px){
+    #panel-abilities.active,#panel-team.active,#panel-growth.active,#panel-mindset.active,#panel-log.active{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2vw,28px);align-items:start}
+  }
+  .card{background:var(--card);border:1px solid var(--border);border-top:3px solid var(--border2);padding:clamp(18px,2.2vw,32px);margin-bottom:clamp(14px,1.5vw,20px)}
+  .card-accent{border-top-color:var(--accent)}.card-gold{border-top-color:var(--gold)}.card-green{border-top-color:var(--green)}
+  .card-title{font-family:var(--font-head);font-size:clamp(14px,1.3vw,20px);font-weight:900;letter-spacing:.14em;text-transform:uppercase;color:#fff;font-style:italic;margin-bottom:clamp(12px,1.2vw,18px)}
+  .ability{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--accent);padding:clamp(12px,1.4vw,20px);margin-bottom:10px}
+  .ability-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+  .ability-type{font-family:var(--font-mono);font-size:clamp(8px,.7vw,10px);letter-spacing:.16em;text-transform:uppercase;color:var(--accent);background:rgba(176,107,255,.1);padding:2px 8px;border:1px solid rgba(176,107,255,.3)}
+  .ability-name{font-family:var(--font-head);font-size:clamp(15px,1.4vw,22px);font-weight:900;font-style:italic;letter-spacing:.08em;text-transform:uppercase;color:#fff}
+  .ability-desc{font-size:clamp(12px,1vw,15px);color:var(--text);line-height:1.6;margin-bottom:8px}
+  .ability-tips{margin-top:8px;border-top:1px solid var(--border);padding-top:8px}
+  .ability-tip{font-size:clamp(11px,.95vw,14px);color:var(--accent);font-family:var(--font-mono);line-height:1.6;padding:2px 0}
+  .ability-tip::before{content:'▸ ';opacity:.7}
+  .callout{background:rgba(176,107,255,.05);border:1px solid rgba(176,107,255,.18);border-left:4px solid var(--accent);padding:clamp(10px,1.2vw,16px) clamp(12px,1.4vw,20px);margin:10px 0;font-size:clamp(12px,1vw,15px);line-height:1.6;color:var(--text)}
+  .callout.gold{background:rgba(232,184,75,.05);border-color:rgba(232,184,75,.2);border-left-color:var(--gold)}
+  .callout.green{background:rgba(76,175,130,.05);border-color:rgba(76,175,130,.2);border-left-color:var(--green)}
+  .callout.valk{background:rgba(79,195,247,.05);border-color:rgba(79,195,247,.2);border-left-color:var(--valk)}
+  .callout-label{font-family:var(--font-mono);font-size:clamp(9px,.75vw,11px);font-weight:700;letter-spacing:.14em;color:var(--accent);text-transform:uppercase;margin-bottom:5px}
+  .callout.gold .callout-label{color:var(--gold)}.callout.green .callout-label{color:var(--green)}.callout.valk .callout-label{color:var(--valk)}
+  .growth-item{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--gold);padding:clamp(12px,1.3vw,18px);margin-bottom:10px}
+  .growth-title{font-family:var(--font-head);font-size:clamp(14px,1.2vw,19px);font-weight:900;font-style:italic;letter-spacing:.08em;text-transform:uppercase;color:var(--gold);margin-bottom:5px}
+  .growth-body{font-size:clamp(12px,1vw,15px);color:var(--text);line-height:1.6}
+  .growth-action{margin-top:7px;font-family:var(--font-mono);font-size:clamp(10px,.85vw,13px);color:var(--green);line-height:1.5}
+  .growth-action::before{content:'→ '}
+  .combo{background:var(--panel);border:1px solid var(--border);border-top:3px solid var(--accent);padding:clamp(14px,1.6vw,22px);margin-bottom:12px}
+  .combo-name{font-family:var(--font-head);font-size:clamp(16px,1.5vw,24px);font-weight:900;font-style:italic;letter-spacing:.1em;text-transform:uppercase;color:#fff;margin-bottom:3px}
+  .combo-trigger{font-family:var(--font-mono);font-size:clamp(10px,.85vw,13px);color:var(--gold);letter-spacing:.1em;margin-bottom:12px}
+  .combo-steps{list-style:none}
+  .combo-step{display:flex;gap:12px;padding:6px 0;border-bottom:1px solid var(--border);font-size:clamp(12px,1vw,15px);color:var(--text);line-height:1.4;align-items:flex-start}
+  .combo-step:last-child{border-bottom:none}
+  .combo-who{font-family:var(--font-mono);font-size:clamp(8px,.75vw,10px);text-transform:uppercase;letter-spacing:.1em;padding-top:3px;min-width:56px;flex-shrink:0}
+  .you{color:var(--accent)}.bang{color:var(--bang)}.valk{color:var(--valk)}
+  .mindset-block{background:var(--panel);border:1px solid var(--border);border-left:4px solid var(--accent);padding:clamp(14px,1.6vw,22px);margin-bottom:12px;position:relative;overflow:hidden}
+  .mindset-block::before{content:'"';position:absolute;top:-10px;right:10px;font-size:80px;font-family:var(--font-head);font-weight:900;color:var(--accent);opacity:.07;line-height:1;pointer-events:none}
+  .mindset-text{font-family:var(--font-head);font-size:clamp(16px,1.6vw,24px);font-weight:700;font-style:italic;line-height:1.4;color:#fff;margin-bottom:8px}
+  .mindset-sub{font-size:clamp(12px,1vw,15px);color:var(--muted);line-height:1.5}
+  .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(10px,1.2vw,16px)}
+  .form-grid.three{grid-template-columns:1fr 1fr 1fr}
+  @media(max-width:600px){.form-grid,.form-grid.three{grid-template-columns:1fr}}
+  .field-group{margin-bottom:12px}
+  .field-label{font-size:clamp(9px,.8vw,11px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;display:block}
+  input[type="text"],input[type="number"],textarea,select{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--text);font-family:var(--font-mono);font-size:clamp(12px,1vw,14px);padding:clamp(7px,.8vw,11px) clamp(10px,1vw,14px);outline:none;transition:border-color .15s}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent)}
+  textarea{min-height:clamp(60px,6vw,90px);resize:vertical;font-family:var(--font-ui)}
+  select option{background:var(--card)}
+  .btn{font-family:var(--font-ui);font-size:clamp(12px,1vw,14px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;padding:clamp(8px,.9vw,12px) clamp(16px,1.6vw,24px);border:none;cursor:pointer;transition:all .15s}
+  .btn-primary{background:var(--accent);color:var(--bg)}.btn-primary:hover{background:#c490ff}
+  .btn-secondary{background:var(--border2);color:var(--text)}.btn-secondary:hover{background:var(--border)}
+  .flex-end{display:flex;justify-content:flex-end;gap:8px;margin-top:16px}
+  .log-entry{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--border2);padding:clamp(12px,1.2vw,18px) clamp(14px,1.4vw,20px);margin-bottom:8px;display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:start;cursor:pointer;transition:border-color .15s}
+  .log-entry:hover{border-left-color:var(--accent)}.log-entry.win{border-left-color:var(--green)}.log-entry.loss{border-left-color:var(--red)}
+  .log-placement{font-family:var(--font-head);font-size:clamp(20px,2.2vw,34px);font-weight:900;color:#fff;line-height:1;min-width:44px;text-align:center}
+  .log-placement.top3{color:var(--accent)}
+  .log-meta{font-size:clamp(11px,.9vw,13px);color:var(--muted);margin-top:2px}
+  .log-notes{font-size:clamp(12px,1vw,14px);color:var(--text);margin-top:4px;line-height:1.4}
+  .log-rp{font-family:var(--font-mono);font-size:clamp(12px,1.1vw,16px);font-weight:700;text-align:right}
+  .log-rp.pos{color:var(--green)}.log-rp.neg{color:var(--red)}
+  .stats-row{display:flex;gap:clamp(6px,.8vw,12px);margin-bottom:clamp(14px,1.6vw,22px);flex-wrap:wrap}
+  .stat-pill{background:var(--panel);border:1px solid var(--border);padding:clamp(10px,1vw,16px) clamp(14px,1.4vw,22px);flex:1;min-width:80px;text-align:center}
+  .stat-val{font-family:var(--font-head);font-size:clamp(20px,2.2vw,34px);font-weight:900;color:#fff;line-height:1}
+  .stat-lbl{font-size:clamp(9px,.8vw,12px);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:4px}
+  .week-card{background:var(--panel);border:1px solid var(--border);padding:clamp(14px,1.5vw,22px);margin-bottom:10px}
+  .week-header{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+  .week-title{font-family:var(--font-head);font-size:clamp(14px,1.3vw,20px);font-weight:900;letter-spacing:.08em;text-transform:uppercase;color:#fff;font-style:italic}
+  .week-body{display:none;margin-top:14px}.week-body.open{display:block}
+  .week-chevron{color:var(--muted);transition:transform .2s}.week-chevron.open{transform:rotate(180deg)}
+  .detail-field{margin-bottom:12px}
+  .detail-label{font-size:clamp(9px,.75vw,11px);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+  .detail-val{font-size:clamp(13px,1.1vw,16px);color:var(--text);line-height:1.5}
+  .modal-overlay{display:none;position:fixed;inset:0;background:rgba(7,6,15,.92);z-index:100;align-items:center;justify-content:center;padding:20px}
+  .modal-overlay.open{display:flex}
+  .modal{background:var(--card);border:1px solid var(--border2);border-top:3px solid var(--accent);max-width:clamp(460px,44vw,640px);width:100%;padding:clamp(20px,2.5vw,32px)}
+  .modal-title{font-family:var(--font-head);font-size:clamp(16px,1.6vw,22px);font-weight:900;letter-spacing:.12em;text-transform:uppercase;color:#fff;font-style:italic;border-left:4px solid var(--accent);padding-left:12px;margin-bottom:10px}
+  .modal-desc{font-size:clamp(12px,1vw,14px);color:var(--muted);line-height:1.6;margin-bottom:18px}
+  .modal-desc strong{color:var(--text)}
+  .field-group-modal{margin-bottom:14px}
+  .modal-actions{display:flex;gap:8px;justify-content:flex-end;margin-top:18px}
+  #detailModal .modal{max-width:clamp(360px,40vw,560px)}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--card);border:1px solid var(--border2);border-left:4px solid var(--accent);padding:10px 20px;font-size:13px;font-family:var(--font-mono);color:var(--text);z-index:200;transition:transform .3s ease;white-space:nowrap}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+  .toast.error{border-left-color:var(--red)}.toast.success{border-left-color:var(--green)}
+  .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .6s linear infinite;vertical-align:middle;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty-state{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px}
+  .empty-icon{font-size:28px;margin-bottom:10px;opacity:.4}
+  .section-hdr{font-family:var(--font-head);font-size:clamp(11px,1vw,14px);font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:10px}
+  .section-hdr::after{content:'';flex:1;height:1px;background:var(--border)}
+  .rule-list{font-size:clamp(12px,1vw,15px);color:var(--text);line-height:1.9;padding-left:12px;border-left:2px solid var(--border2)}
+</style>
+</head>
+<body>
+<div class="modal-overlay" id="setupModal">
+  <div class="modal">
+    <div class="modal-title">Connect Google Sheets</div>
+    <div class="modal-desc">Your game log and weekly notes save to your own Google Sheet. Paste your Web App URL below.<br><br><strong>No URL yet? Ask your squad leader — he'll set it up and send it over.</strong></div>
+    <div class="field-group-modal">
+      <label class="field-label">Apps Script Web App URL</label>
+      <input type="text" id="cfgScriptUrl" placeholder="https://script.google.com/macros/s/...">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-secondary" onclick="closeSetup()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveConfig()">Save & Connect</button>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay" id="detailModal"><div class="modal" id="detailContent"></div></div>
+<div class="toast" id="toast"></div>
+
+<div class="app">
+  <div class="header">
+    <div class="header-left">
+      <img src="./Alter.jpg" class="header-portrait" alt="Alter">
+      <div>
+        <div class="logo"><span>Mr. Botjangles</span> — Alter</div>
+        <div class="header-sub">Field Guide &nbsp;·&nbsp; Season Reference</div>
+        <div class="header-badges">
+          <span class="badge role">Support / Anchor</span>
+          <span class="badge class">Skirmisher Class</span>
+          <span class="badge team">The Trio</span>
+        </div>
+      </div>
+    </div>
+    <button class="config-badge" id="configBtn" onclick="openSetup()">⚙ NOT CONNECTED</button>
+    <div class="header-vfx"></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('mindset')">Mindset</button>
+    <button class="tab" onclick="switchTab('growth')">Level Up</button>
+    <button class="tab" onclick="switchTab('team')">Team Combos</button>
+    <button class="tab" onclick="switchTab('abilities')">Abilities</button>
+    <button class="tab" onclick="switchTab('log')">Game Log</button>
+    <button class="tab" onclick="switchTab('weekly')">Weekly Focus</button>
+  </div>
+
+  <!-- MINDSET -->
+  <div class="panel active" id="panel-mindset">
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Mindset Principles</div>
+        <div class="mindset-block">
+          <div class="mindset-text">The portal you place before the fight is worth more than any shot you fire during it.</div>
+          <div class="mindset-sub">Alter's ceiling is pre-fight geometry. The best plays look inevitable in replay because the setup happened before anyone pulled a trigger. The portal was already there.</div>
+        </div>
+        <div class="mindset-block" style="border-left-color:var(--gold)">
+          <div class="mindset-text">The anchor holds so the squad can be fearless.</div>
+          <div class="mindset-sub">When the squad knows there's a Void Nexus on the field, they push harder and take better fights. Your utility creates the conditions for Valkyrie and Bangalore to be aggressive. That's the job — and it's irreplaceable on this squad.</div>
+        </div>
+        <div class="mindset-block" style="border-left-color:var(--green)">
+          <div class="mindset-text">Utility first. Kill pressure second. In that order, every time.</div>
+          <div class="mindset-sub">The temptation is always to shoot. The discipline is to place the portal, drop the Nexus, and let your teammates get the angles first. Your output is measured in plays enabled — not damage dealt.</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Between Games</div>
+        <div class="callout">
+          <div class="callout-label">60-Second Reset</div>
+          Before requeuing, one question: did the Nexus go down before the squad needed it, or after? If before — what made that read work? If after — what was the signal you missed? One sentence, then requeue.
+        </div>
+        <div class="callout gold" style="margin-top:10px">
+          <div class="callout-label">After a Good Game</div>
+          Identify the exact portal that created the best play. Entry angle? Escape passage? Nexus pull on a knocked teammate? Name it — it makes it repeatable next session.
+        </div>
+        <div class="callout green" style="margin-top:10px">
+          <div class="callout-label">The Standard</div>
+          Three questions each session: Did the Nexus go down proactively? Did I call at least one portal out loud before placing it? Did I hold anchor when the squad needed it instead of following the push? Hit those three and everything else follows.
+        </div>
+      </div>
+      <div class="card" style="border-top-color:var(--accent)">
+        <div class="card-title">Your Notes</div>
+        <textarea id="mindsetNotes" placeholder="Thoughts between games, portals that worked, calls to try next session..."></textarea>
+        <div class="flex-end" style="margin-top:8px">
+          <button class="btn btn-primary" onclick="saveMindsetNotes()">Save Notes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEVEL UP -->
+  <div class="panel" id="panel-growth">
+    <div>
+      <div class="card card-gold">
+        <div class="card-title">Areas to Level Up</div>
+        <div class="growth-item">
+          <div class="growth-title">Portal Placement Creativity</div>
+          <div class="growth-body">Void Passage through a wall is useful. Through a ceiling, a roof, or a vertical surface to gain unexpected high ground is game-changing. The mechanic supports all three — the unlock is seeing every surface as a potential two-sided entry point before the fight starts, not just an escape hatch. The most creative Alter players have a mental library of surfaces they've already tested and know work.</div>
+          <div class="growth-action">Once per session, deliberately place a portal somewhere new — ceiling, angled wall, surface you've never tried. Build the library before the fight needs it</div>
+        </div>
+        <div class="growth-item">
+          <div class="growth-title">Nexus Timing — Proactive vs Reactive</div>
+          <div class="growth-body">The Void Nexus is most powerful when it's already on the field before the squad needs it. When it goes down as a panic response mid-fight, you're already behind. The habit to build: drop the Nexus the moment you identify where the fight is happening — before the first shot. The squad can use it the whole engagement rather than scrambling for it after someone gets knocked.</div>
+          <div class="growth-action">Make it a rule for a full session: Nexus goes down before you fire a single shot. No exceptions. Lock in the habit first, then calibrate</div>
+        </div>
+        <div class="growth-item">
+          <div class="growth-title">Aggression Timing — Push vs Anchor</div>
+          <div class="growth-body">Two Void Passage charges mean you can genuinely push in and pull back — you're not committing one-way. The growth edge is reading which moment calls for aggression vs. anchoring. The signal: if Valkyrie is calling the ult or Bangalore is smoking a push, that's when you go with them. If the squad is resetting or someone is down, that's when you hold the Nexus position and cover. Both are the right call — knowing which one the moment calls for is the skill.</div>
+          <div class="growth-action">Before each engagement, say it out loud: "Pushing" or "Anchoring." Forces the decision before the chaos and gives the squad real-time information</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-gold">
+        <div class="card-title">Focus Drills</div>
+        <div class="callout gold">
+          <div class="callout-label">Drill 1 — Pre-Fight Nexus</div>
+          Every engagement, your first action is Void Nexus — before anything else. Not after the first shot. Not when someone gets knocked. First action. Run this for a full session and track how often the squad actually uses it vs. games where it went down late.
+        </div>
+        <div class="callout gold" style="margin-top:10px">
+          <div class="callout-label">Drill 2 — Unconventional Surfaces</div>
+          Firing range or early-game: find one ceiling portal and one wall-to-high-ground portal per session. Don't wait for a fight to discover what's possible. Build the options in advance.
+        </div>
+        <div class="callout gold" style="margin-top:10px">
+          <div class="callout-label">Drill 3 — Call Before You Place</div>
+          Before every Void Passage, say one word out loud: "Entry," "Escape," or "High ground." Intention behind the placement + intel for the squad. One word is enough.
+        </div>
+        <div class="callout green" style="margin-top:16px">
+          <div class="callout-label">The Big Picture</div>
+          The squad has one of the highest-ceiling compositions in the game. Bangalore controls tempo on the ground. Valkyrie controls vertical positioning. You control the angle no one expects. Three dimensions of attack is genuinely hard to defend against when all three are coordinated.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEAM COMBOS -->
+  <div class="panel" id="panel-team">
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Squad Identity</div>
+        <div class="callout">
+          <div class="callout-label">The Trio — Bangalore · Valkyrie · Alter</div>
+          This squad wins through position and angles. Bangalore controls sight lines. Valkyrie moves the squad and scans enemies in transit. You manufacture entry angles no other squad has access to and hold the extraction layer that lets everyone fight without fear. When all three pieces connect, you dictate every fight from start to finish.
+        </div>
+        <div class="callout valk" style="margin-top:10px">
+          <div class="callout-label">Your Relationship with Valkyrie's Ult</div>
+          When Tarbo calls "popping ult" — have the Nexus already placed at the intended landing zone before the squad descends. Everyone hits the ground with a fallback already live. You're setting the safety net for the squad's most vulnerable moment.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Breach Combo</div>
+        <div class="combo">
+          <div class="combo-name">Void Entry</div>
+          <div class="combo-trigger">Call: "Portal up — push on my void"</div>
+          <ul class="combo-steps">
+            <li class="combo-step"><span class="combo-who you">You</span><span>Place Void Passage through a wall or structure into the enemy position — call it: "Entry left wall" so the squad knows the angle</span></li>
+            <li class="combo-step"><span class="combo-who bang">Bangalore</span><span>Smokes the entry point on the other side — enemies can't see who's coming through or from where</span></li>
+            <li class="combo-step"><span class="combo-who valk">Valkyrie</span><span>Pushes through the portal or uses VTOL jets from above simultaneously — two angles hitting at once</span></li>
+            <li class="combo-step"><span class="combo-who you">You</span><span>Go through second or hold the near side as anchor — call which one you're doing before the push starts</span></li>
+          </ul>
+        </div>
+        <div class="callout green">
+          <div class="callout-label">Why This Is Hard to Stop</div>
+          A portal angle from one direction plus Valkyrie from above at the same moment requires enemies to cover two completely different directions simultaneously. That's nearly impossible to execute cleanly under pressure.
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Reset Combo</div>
+        <div class="combo" style="border-top-color:var(--gold)">
+          <div class="combo-name">Nexus Pull</div>
+          <div class="combo-trigger">Call: "Nexus live, fall back" or "Nexus pull on [name]"</div>
+          <ul class="combo-steps">
+            <li class="combo-step"><span class="combo-who you">You</span><span>Nexus is already down from the start of the fight — if a teammate goes down, immediately call "Nexus pull on [name]"</span></li>
+            <li class="combo-step"><span class="combo-who bang">Bangalore</span><span>Smokes the fallen player's position — buys time for them to interact with the Nexus or for you to reach them</span></li>
+            <li class="combo-step"><span class="combo-who valk">Valkyrie</span><span>Holds or repositions — does NOT solo push while the squad is down a member. Waits until the squad is whole</span></li>
+            <li class="combo-step"><span class="combo-who you">You</span><span>Once regrouped at the Nexus — immediately call the next move. Don't sit still after a reset</span></li>
+          </ul>
+        </div>
+        <div class="callout gold">
+          <div class="callout-label">The Critical Rule</div>
+          This only works if the Nexus was down at the start of the fight. A Nexus placed after a knock is almost always too late. The early drop habit is the entire combo.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Late Game Protocol</div>
+        <div class="callout">
+          <div class="callout-label">Final Ring — Your Specific Job</div>
+          When Tarbo pops the ult to claim final ring, you land and immediately in this order: (1) Void Nexus at the squad's position, (2) Void Passage through the nearest structure as an escape route, (3) call enemy positions from the Jet-Fighter HUD scan out loud. Before anyone fires a shot.
+        </div>
+        <div class="rule-list" style="margin-top:12px">
+          <div>▸ Nexus down on landing — not after the first contact</div>
+          <div>▸ Escape portal through the nearest structure immediately</div>
+          <div>▸ Call enemy positions from Tarbo's dive scan the moment he says them</div>
+          <div>▸ Hold position — do not solo push in final ring</div>
+          <div>▸ Gift from the Rift nearby deathboxes for emergency heals</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ABILITIES -->
+  <div class="panel" id="panel-abilities">
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Alter — Current Kit (Season 28)</div>
+        <div class="ability">
+          <div class="ability-header">
+            <span class="ability-type">Passive</span>
+            <span class="ability-name">Gift from the Rift</span>
+          </div>
+          <div class="ability-desc">See death boxes through walls up to 75m away and remotely take one item from each — heals, ammo, batteries, weapons. Cannot take armor. One item per box. Void Vision (see enemy health bars after exiting your own portal) is now built into the base passive, no perk required.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Priority order: shield batteries, cells, heals — then ammo. Weapon swap only if yours is critical</div>
+            <div class="ability-tip">You can grab a teammate's banner from their death box — never forget this option</div>
+            <div class="ability-tip">The health bar reveal after exiting a portal is combat intel — use it to decide push or pull immediately</div>
+            <div class="ability-tip">Loot boxes from cover during active fights — free resources without breaking position</div>
+          </div>
+        </div>
+        <div class="ability">
+          <div class="ability-header">
+            <span class="ability-type">Tactical</span>
+            <span class="ability-name">Void Passage</span>
+          </div>
+          <div class="ability-desc">Two-way portal through any surface up to 25m thick. Two charges. Each player has their own independent 30-second cooldown. Two portals can be active simultaneously. Void Siphon (a climbable rope) auto-generates from ceiling portals up to 45m, and from unreachable wall portals up to 20m. Enemies briefly highlighted on the other side immediately after placement. Hold to preview placement — white = valid, red = blocked.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Two charges = push in, portal back out — you're not committing one-way anymore</div>
+            <div class="ability-tip">Ceiling portals with Void Siphon are the fastest way to gain unexpected high ground</div>
+            <div class="ability-tip">The enemy highlight on placement is free intel — call what you see before the squad goes through</div>
+            <div class="ability-tip">Hold the button to preview — never place blind on unfamiliar surfaces</div>
+            <div class="ability-tip">Call every portal out loud: "Entry left wall" or "Escape through floor" — one phrase is enough</div>
+          </div>
+        </div>
+        <div class="ability">
+          <div class="ability-header">
+            <span class="ability-type">Ultimate</span>
+            <span class="ability-name">Void Nexus</span>
+          </div>
+          <div class="ability-desc">Deploy a rally device up to 200m away. Squadmates interact with it to open a portal back from anywhere on the map. Now reusable — each player has their own 30-second individual cooldown after using it. Two Nexuses can be active at the same time. Interact directly with the Nexus to summon a knocked ally — summoned allies can move and use their knockdown shield. Won't trigger accidentally on proximity, only on direct interaction.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Drop it before the first shot — not after someone gets knocked. This is the whole game</div>
+            <div class="ability-tip">Reusable cooldown means teammates can use it and come back — it's not a single-use resource</div>
+            <div class="ability-tip">The knocked ally summon is underused and underrated — practice the mechanic</div>
+            <div class="ability-tip">200m range means you can place it well behind the squad as a true deep-anchor fallback</div>
+            <div class="ability-tip">Two Nexuses active — use the second as a forward rally point while the first stays as the escape</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Legend Perks — Know Your Options</div>
+        <div class="callout">
+          <div class="callout-label">How Perks Work</div>
+          Two picks per match as Evo armor levels — one at Tier 1, one at Tier 2. Choose based on whether that match calls for aggressive portal snowball play or sustained support utility.
+        </div>
+        <div class="ability" style="border-left-color:var(--gold)">
+          <div class="ability-header">
+            <span class="ability-type" style="color:var(--gold);background:rgba(232,184,75,.1);border-color:rgba(232,184,75,.3)">Perk — Tier 1</span>
+            <span class="ability-name">Trailblazer</span>
+          </div>
+          <div class="ability-desc">Speed boost when you and a teammate are facing each other from 20m+. Faster convergence during spreads and rotations — especially useful when closing distance after a Nexus pull.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Best when the squad plays spread — rotating to converge gets significantly faster</div>
+          </div>
+        </div>
+        <div class="ability" style="border-left-color:var(--gold)">
+          <div class="ability-header">
+            <span class="ability-type" style="color:var(--gold);background:rgba(232,184,75,.1);border-color:rgba(232,184,75,.3)">Perk — Tier 1 (Alt)</span>
+            <span class="ability-name">Charged Knock</span>
+          </div>
+          <div class="ability-desc">Knocking an enemy gives 50 HP/shields and a free bonus Void Passage charge (up to 3 total). Aggressive snowball build — knock someone, pop a portal, keep the pressure going.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Best in aggressive early-fight games — the free portal charge after a knock costs you nothing to push again</div>
+          </div>
+        </div>
+        <div class="ability" style="border-left-color:var(--gold)">
+          <div class="ability-header">
+            <span class="ability-type" style="color:var(--gold);background:rgba(232,184,75,.1);border-color:rgba(232,184,75,.3)">Perk — Tier 2</span>
+            <span class="ability-name">Void Vision</span>
+          </div>
+          <div class="ability-desc">Extended enemy highlights and health bars after exiting your portal. More information about enemies before committing to a push through.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Best in late game — knowing enemy health before going through is often the deciding factor</div>
+          </div>
+        </div>
+        <div class="ability" style="border-left-color:var(--gold)">
+          <div class="ability-header">
+            <span class="ability-type" style="color:var(--gold);background:rgba(232,184,75,.1);border-color:rgba(232,184,75,.3)">Perk — Tier 2 (Alt)</span>
+            <span class="ability-name">Eternal Nexus</span>
+          </div>
+          <div class="ability-desc">Void Nexus never expires. Set it once and it's there for the entire match.</div>
+          <div class="ability-tips">
+            <div class="ability-tip">Best for long anchor games — place it once, forget about duration, focus entirely on plays</div>
+          </div>
+        </div>
+        <div class="callout gold" style="margin-top:12px">
+          <div class="callout-label">Recommended for Mr. Botjangles</div>
+          <strong>Trailblazer + Eternal Nexus</strong> — fits the support/anchor identity perfectly. Fast squad convergence, permanent Nexus fallback. <strong>Charged Knock + Void Vision</strong> is the aggressive build for games where you're getting early knocks and pushing hard alongside Valkyrie.
+        </div>
+      </div>
+      <div class="card card-accent">
+        <div class="card-title">Skirmisher Class Perk</div>
+        <div class="callout">
+          <div class="callout-label">Care Package Insight</div>
+          Scan falling care packages to see the best item inside before it lands. Earn bonus EVO for every scan. Aim your reticle at the package until the circle fills. Use this during safe rotations — it's free EVO and tells the squad whether the package is worth fighting for.
+        </div>
+        <div class="rule-list" style="margin-top:12px">
+          <div>▸ Scan every package you see during rotation — free EVO every time</div>
+          <div>▸ Call the contents to the squad before anyone pushes for it</div>
+          <div>▸ Care weapon inside = usually worth the fight</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME LOG -->
+  <div class="panel" id="panel-log">
+    <div>
+      <div class="card card-accent">
+        <div class="card-title">Log a Game</div>
+        <div class="form-grid three">
+          <div class="field-group"><label class="field-label">Date</label><input type="text" id="logDate" placeholder="e.g. Feb 28"></div>
+          <div class="field-group"><label class="field-label">Mode</label>
+            <select id="logMode">
+              <option value="Ranked">Ranked</option>
+              <option value="With The Trio">With The Trio</option>
+              <option value="Duo">Duo</option>
+              <option value="Solo Queue">Solo Queue</option>
+              <option value="Mixtape">Mixtape</option>
+            </select>
+          </div>
+          <div class="field-group"><label class="field-label">Placement</label><input type="number" id="logPlacement" placeholder="e.g. 3" min="1" max="20"></div>
+        </div>
+        <div class="form-grid">
+          <div class="field-group"><label class="field-label">RP +/-</label><input type="number" id="logRP" placeholder="e.g. +180 or -48"></div>
+          <div class="field-group"><label class="field-label">Kills / Assists</label><input type="text" id="logKD" placeholder="e.g. 2K / 5A"></div>
+        </div>
+        <div class="field-group"><label class="field-label">✓ Best portal or Nexus play this game</label><textarea id="logRight" placeholder="What worked? A creative entry angle, a Nexus pull, a combo with the squad?"></textarea></div>
+        <div class="field-group"><label class="field-label">→ One thing to try next time</label><textarea id="logDiff" placeholder="Keep it to one thing."></textarea></div>
+        <div class="field-group"><label class="field-label">★ Anything notable</label><textarea id="logNote" placeholder="Highlight, clip to save, moment to remember..." style="min-height:52px"></textarea></div>
+        <div class="flex-end">
+          <button class="btn btn-secondary" onclick="clearForm()">Clear</button>
+          <button class="btn btn-primary" onclick="saveGame()">Save Game</button>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="stats-row">
+        <div class="stat-pill"><div class="stat-val" id="statGames">—</div><div class="stat-lbl">Games</div></div>
+        <div class="stat-pill"><div class="stat-val" id="statNetRP">—</div><div class="stat-lbl">Net RP</div></div>
+        <div class="stat-pill"><div class="stat-val" id="statAvgPlace">—</div><div class="stat-lbl">Avg Place</div></div>
+        <div class="stat-pill"><div class="stat-val" id="statTop5">—</div><div class="stat-lbl">Top 5%</div></div>
+      </div>
+      <div id="historyList"><div class="empty-state"><div class="empty-icon">📋</div>No games logged yet. Log your first game to start tracking.</div></div>
+    </div>
+  </div>
+
+  <!-- WEEKLY FOCUS -->
+  <div class="panel" id="panel-weekly">
+    <div style="display:grid;grid-template-columns:1fr;gap:clamp(16px,2vw,28px)">
+      <div class="card card-accent" style="max-width:680px">
+        <div class="card-title">New Weekly Focus</div>
+        <div class="form-grid">
+          <div class="field-group"><label class="field-label">Week</label><input type="text" id="wrWeek" placeholder="e.g. Mar 1–7"></div>
+          <div class="field-group"><label class="field-label">Net RP this week</label><input type="number" id="wrRP" placeholder="e.g. +450"></div>
+        </div>
+        <div class="field-group"><label class="field-label">What clicked this week</label><textarea id="wrWin" placeholder="A portal placement, Nexus timing, combo that worked — what was the breakthrough?"></textarea></div>
+        <div class="field-group"><label class="field-label">Focus for next week</label><textarea id="wrFocus" placeholder="One specific thing. Keep it simple."></textarea></div>
+        <div class="field-group"><label class="field-label">Squad notes</label><textarea id="wrSquad" placeholder="How did the trio play? Anything to bring up next session?" style="min-height:52px"></textarea></div>
+        <div class="flex-end"><button class="btn btn-primary" onclick="saveWeekly()">Save Focus</button></div>
+      </div>
+      <div>
+        <div class="section-hdr">Past Weekly Focuses</div>
+        <div id="weeklyList"><div class="empty-state"><div class="empty-icon">📝</div>No weekly focuses logged yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let CFG={scriptUrl:''};let gamesCache=[];
+function loadConfig(){const s=localStorage.getItem('botjanglesTrackerConfig');if(s){CFG=JSON.parse(s);updateConfigBadge();if(CFG.scriptUrl)loadAll();}else{setTimeout(()=>openSetup(),600);}const n=localStorage.getItem('botjanglesMindsetNotes');if(n)document.getElementById('mindsetNotes').value=n;}
+function saveConfig(){const url=document.getElementById('cfgScriptUrl').value.trim();if(!url||!url.startsWith('https://script.google.com')){toast('Please paste a valid Apps Script URL.','error');return;}CFG={scriptUrl:url};localStorage.setItem('botjanglesTrackerConfig',JSON.stringify(CFG));closeSetup();updateConfigBadge();loadAll().then(()=>toast('Connected!','success'));}
+function updateConfigBadge(){const btn=document.getElementById('configBtn');if(CFG.scriptUrl){btn.textContent='⚙ CONNECTED';btn.classList.add('connected');}else{btn.textContent='⚙ NOT CONNECTED';btn.classList.remove('connected');}}
+function openSetup(){document.getElementById('cfgScriptUrl').value=CFG.scriptUrl||'';document.getElementById('setupModal').classList.add('open');}
+function closeSetup(){document.getElementById('setupModal').classList.remove('open');}
+function saveMindsetNotes(){localStorage.setItem('botjanglesMindsetNotes',document.getElementById('mindsetNotes').value);toast('Notes saved!','success');}
+async function scriptGet(sheet){const r=await fetch(`${CFG.scriptUrl}?sheet=${encodeURIComponent(sheet)}`);if(!r.ok)throw new Error(`Fetch failed: ${r.status}`);const d=await r.json();return d.rows||[];}
+async function scriptPost(sheet,headers,row){const r=await fetch(CFG.scriptUrl,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({sheet,headers,action:'append',row})});if(!r.ok)throw new Error(`Post failed: ${r.status}`);const d=await r.json();if(!d.success)throw new Error(d.error||'Unknown error');return d;}
+function clearForm(){['logPlacement','logRP','logKD','logRight','logDiff','logNote'].forEach(id=>document.getElementById(id).value='');document.getElementById('logMode').value='Ranked';document.getElementById('logDate').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});}
+async function saveGame(){if(!CFG.scriptUrl){openSetup();return;}const row=[document.getElementById('logDate').value||new Date().toLocaleDateString(),document.getElementById('logMode').value,document.getElementById('logPlacement').value,document.getElementById('logRP').value,document.getElementById('logKD').value,document.getElementById('logRight').value,document.getElementById('logDiff').value,document.getElementById('logNote').value];if(!row[2]){toast('Placement is required.','error');return;}try{toast('<span class="spinner"></span>Saving…');await scriptPost('Games',['Date','Mode','Placement','RP','Kills','Best Portal/Nexus Play','Try Next','Notable'],row);clearForm();await loadGames();toast('Game saved!','success');}catch(e){toast('Error: '+e.message,'error');}}
+async function loadGames(){if(!CFG.scriptUrl)return;try{const rows=await scriptGet('Games');gamesCache=rows.filter(r=>r[2]);renderHistory();renderStats();}catch(e){console.warn('loadGames:',e.message);}}
+function renderStats(){const g=gamesCache;document.getElementById('statGames').textContent=g.length||'—';if(!g.length)return;const net=g.reduce((s,r)=>s+(parseInt(r[3])||0),0);document.getElementById('statNetRP').textContent=(net>=0?'+':'')+net;document.getElementById('statAvgPlace').textContent=(g.reduce((s,r)=>s+(parseInt(r[2])||20),0)/g.length).toFixed(1);const top5=g.filter(r=>parseInt(r[2])<=5).length;document.getElementById('statTop5').textContent=Math.round(top5/g.length*100)+'%';}
+function renderHistory(){const el=document.getElementById('historyList');if(!gamesCache.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div>No games yet — log your first one!</div>';return;}el.innerHTML=[...gamesCache].reverse().map((r,i)=>{const place=parseInt(r[2])||20;const rp=parseInt(r[3])||0;const idx=gamesCache.length-1-i;return`<div class="log-entry ${place===1?'win':rp<0?'loss':''}" onclick="showDetail(${idx})"><div><div class="log-placement ${place<=3?'top3':''}">#${place}</div><div class="log-meta">${r[0]||''} · ${r[1]||''}</div></div><div><div class="log-meta">${r[4]||''}</div>${r[5]?`<div class="log-notes"><span style="color:var(--green)">✓</span> ${r[5]}</div>`:''}</div><div class="log-rp ${rp>=0?'pos':'neg'}">${rp>=0?'+':''}${rp||'—'}</div></div>`;}).join('');}
+function showDetail(idx){const r=gamesCache[idx];if(!r)return;const rp=parseInt(r[3])||0;document.getElementById('detailContent').innerHTML=`<div class="modal-title">#${r[2]} Place — ${r[0]||'Unknown'}</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px"><div class="detail-field"><div class="detail-label">Mode</div><div class="detail-val">${r[1]||'—'}</div></div><div class="detail-field"><div class="detail-label">RP</div><div class="detail-val" style="color:${rp>=0?'var(--green)':'var(--red)'}">${rp>=0?'+':''}${rp}</div></div><div class="detail-field"><div class="detail-label">Kills/Assists</div><div class="detail-val">${r[4]||'—'}</div></div></div>${r[5]?`<div class="detail-field"><div class="detail-label">✓ Best portal/Nexus play</div><div class="detail-val">${r[5]}</div></div>`:''}${r[6]?`<div class="detail-field"><div class="detail-label">→ Try next time</div><div class="detail-val">${r[6]}</div></div>`:''}${r[7]?`<div class="detail-field"><div class="detail-label">★ Notable</div><div class="detail-val">${r[7]}</div></div>`:''}<div style="display:flex;justify-content:flex-end;margin-top:16px"><button class="btn btn-secondary" onclick="document.getElementById('detailModal').classList.remove('open')">Close</button></div>`;document.getElementById('detailModal').classList.add('open');}
+async function saveWeekly(){if(!CFG.scriptUrl){openSetup();return;}const row=[document.getElementById('wrWeek').value,document.getElementById('wrRP').value,document.getElementById('wrWin').value,document.getElementById('wrFocus').value,document.getElementById('wrSquad').value];if(!row[0]){toast('Week label required.','error');return;}try{toast('<span class="spinner"></span>Saving…');await scriptPost('Weekly',['Week','Net RP','What Clicked','Focus Next','Squad Notes'],row);['wrWeek','wrRP','wrWin','wrFocus','wrSquad'].forEach(id=>document.getElementById(id).value='');await loadWeekly();toast('Focus saved!','success');}catch(e){toast('Error: '+e.message,'error');}}
+async function loadWeekly(){if(!CFG.scriptUrl)return;try{const rows=await scriptGet('Weekly');const el=document.getElementById('weeklyList');if(!rows.length){el.innerHTML='<div class="empty-state"><div class="empty-icon">📝</div>No weekly focuses yet.</div>';return;}el.innerHTML=[...rows].reverse().map((r,i)=>{const id=`wk-${i}`;const rp=parseInt(r[1])||0;return`<div class="week-card"><div class="week-header" onclick="toggleWeek('${id}')"><div><div class="week-title">${r[0]||'Week'}</div><div class="log-meta" style="margin-top:3px">${r[1]?`<span style="color:${rp>=0?'var(--green)':'var(--red)'}">${rp>=0?'+':''}${rp} RP</span>`:''}</div></div><span class="week-chevron" id="chev-${id}">▼</span></div><div class="week-body" id="${id}">${r[2]?`<div class="detail-field" style="margin-top:12px"><div class="detail-label">What clicked</div><div class="detail-val">${r[2]}</div></div>`:''}${r[3]?`<div class="detail-field"><div class="detail-label">Focus next week</div><div class="detail-val" style="color:var(--accent)">${r[3]}</div></div>`:''}${r[4]?`<div class="detail-field"><div class="detail-label">Squad notes</div><div class="detail-val">${r[4]}</div></div>`:''}</div></div>`;}).join('');}catch(e){console.warn('loadWeekly:',e.message);}}
+function toggleWeek(id){document.getElementById(id).classList.toggle('open');document.getElementById(`chev-${id}`).classList.toggle('open');}
+function switchTab(name){const tabs=['mindset','growth','team','abilities','log','weekly'];document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',tabs[i]===name));document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));document.getElementById(`panel-${name}`).classList.add('active');}
+let toastTimer;
+function toast(msg,type=''){const el=document.getElementById('toast');el.innerHTML=msg;el.className=`toast ${type} show`;clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),3000);}
+async function loadAll(){await Promise.all([loadGames(),loadWeekly()]);}
+document.addEventListener('DOMContentLoaded',()=>{document.getElementById('logDate').value=new Date().toLocaleDateString('en-US',{month:'short',day:'numeric'});loadConfig();document.getElementById('setupModal').addEventListener('click',e=>{if(e.target.id==='setupModal')closeSetup();});document.getElementById('detailModal').addEventListener('click',e=>{if(e.target.id==='detailModal')document.getElementById('detailModal').classList.remove('open');});});
+</script>
+</body>
+</html>
